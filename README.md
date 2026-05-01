@@ -15,17 +15,27 @@ Embarking on an exciting DevSecOps journey, we're diving into the deployment of 
 - Add arrount 25 GiB of storage due to alot of different blocking we'are going to use. 
 - Launche the EC2 instance
 - Before connecting using SSH create and associate an Elastic IP to the new EC2 instance
-- Connect to the instance using SSH.
+- Connect to the instance using SSH by "EC2 Instance Connect" or "MobaXterm"
+- If you have any error make sur the port 22 in your Security Group is open 
 
 **Step 2: Clone the Code:**
 
-- Update all the packages and then clone the code.
+- Update all the packages with the command below and then clone the code.
+    ```bash
+ 
+    sudo apt-get update
+    ```
 - Clone your application's code repository onto the EC2 instance:
     
     ```bash
     git clone https://github.com/Fokoue22/Deploy-Netflix-Clone-on-Cloud-using-Jenkins.git
     ```
-    
+- Verifie if the project is in your EC2 instance
+    ```bash
+ 
+    cd DevSecOps-NetflixProject/ 
+    ls
+    ``` 
 
 **Step 3: Install Docker and Run the App Using a Container:**
 
