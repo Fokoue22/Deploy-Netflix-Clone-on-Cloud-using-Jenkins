@@ -58,12 +58,6 @@ Embarking on an exciting DevSecOps journey, we're diving into the deployment of 
     docker run -d --name netflix -p 8081:80 netflix:latest
     
     ```
-
-    ```bash
-    #to delete
-    docker stop <containerid>
-    docker rmi -f netflix
-    ```
 - Open the application after running your docker container using your Public IPv4 address. 
 
     ```bash
@@ -87,10 +81,20 @@ It will show but without any details cause you need API key
 - Provide the required basic details and click "Submit."
 - You will receive your TMDB API key.
 
-Now recreate the Docker image with your api key. Before that stop the running container:
+Now recreate the Docker image with your api key. Before that stop/delete the running container:
 ```
+# to delete
 docker stop CONTAINER ID
 docker rm CONTAINER ID
 docker ps # to verifier if everything have been remove
+```
+```
+# recreate the Docker with api key
 docker build --build-arg TMDB_V3_API_KEY=<your-api-key> -t netflix .
+
+# Build and run your application using Docker containers
+docker build -t netflix .
+docker images
+docker run -d --name netflix -p 8081:80 netflix:latest
+    
 ```
