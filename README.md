@@ -104,19 +104,16 @@ docker run -d --name netflix -p 8081:80 netflix:latest
 ### **Phase 2: Security** 
 
 1. **Install SonarQube and Trivy:**
-    - Install SonarQube and Trivy on the EC2 instance to scan for vulnerabilities.
+- Install SonarQube and Trivy on the EC2 instance to scan for vulnerabilities.
         
-        sonarqube
+**sonarqube**
         ```
         docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
         ```
+               
+To access: publicIP:9000 (by default username & password is admin)
         
-        
-        To access: 
-        
-        publicIP:9000 (by default username & password is admin)
-        
-        To install Trivy:
+**To install Trivy:**
         ```
         sudo apt-get install wget apt-transport-https gnupg lsb-release
         wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
@@ -125,10 +122,11 @@ docker run -d --name netflix -p 8081:80 netflix:latest
         sudo apt-get install trivy        
         ```
         
-        to scan image using trivy
-        ```
-        trivy image <imageid>
-        ```
+to scan image using trivy
+```
+docker images
+trivy image <imageid>
+```
         
         
 2. **Integrate SonarQube and Configure:**
