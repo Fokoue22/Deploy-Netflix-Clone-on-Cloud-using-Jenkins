@@ -73,7 +73,9 @@ Embarking on an exciting DevSecOps journey, we're diving into the deployment of 
 - The website will only Open if you have port 8081 in your Security Group. So edit your inbound rules to have port ``8081`` , ``8080``, ``9000``
 ![Alt text](images/security-group.png)
 
-It will show an error cause you need API key
+
+It will show but without any details cause you need API key
+![Alt text](images/security-group.png)
 
 **Step 4: Get the API Key:**
 
@@ -85,7 +87,10 @@ It will show an error cause you need API key
 - Provide the required basic details and click "Submit."
 - You will receive your TMDB API key.
 
-Now recreate the Docker image with your api key:
+Now recreate the Docker image with your api key. Before that stop the running container:
 ```
+docker stop CONTAINER ID
+docker rm CONTAINER ID
+docker ps # to verifier if everything have been remove
 docker build --build-arg TMDB_V3_API_KEY=<your-api-key> -t netflix .
 ```
