@@ -54,12 +54,24 @@ Embarking on an exciting DevSecOps journey, we're diving into the deployment of 
     
     ```bash
     docker build -t netflix .
+    docker images
     docker run -d --name netflix -p 8081:80 netflix:latest
     
+    ```
+
+    ```bash
     #to delete
     docker stop <containerid>
     docker rmi -f netflix
     ```
+- Open the application after running your docker container using your Public IPv4 address. 
+
+    ```bash
+   http://Public IPv4 address:8081/
+    
+    ```
+- The website will only Open if you have port 8081 in your Security Group. So edit your inbound rules to have port ``8081`` , ``8080``, ``9000``
+![Alt text](images/security-group.png)
 
 It will show an error cause you need API key
 
