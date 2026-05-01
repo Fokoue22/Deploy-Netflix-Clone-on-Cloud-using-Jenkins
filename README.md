@@ -93,8 +93,9 @@ docker ps # to verifier if everything have been remove
 docker build --build-arg TMDB_V3_API_KEY=<your-api-key> -t netflix .
 
 # Build and run your application using Docker containers
-docker build -t netflix .
 docker images
 docker run -d --name netflix -p 8081:80 netflix:latest
     
 ```
+
+![Alt text](images/netflix-app-with-api.png)
