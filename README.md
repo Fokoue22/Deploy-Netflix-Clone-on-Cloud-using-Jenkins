@@ -137,32 +137,50 @@ trivy image <imageid>
 ### **Phase 3: CI/CD Setup**
 
 1. **Install Jenkins for Automation:**
-    - Install Jenkins on the EC2 instance to automate deployment:
-    Install Java
+- Install Jenkins on the EC2 instance to automate deployment:
+Install Java
+
+
+
+```bash
+sudo apt update
+sudo apt-get update
+sudo apt-get install openjdk-17-jre -y
+
     
-    ```bash
-    sudo apt update
-    sudo apt install fontconfig openjdk-17-jre
-    java -version
-    openjdk version "17.0.8" 2023-07-18
-    OpenJDK Runtime Environment (build 17.0.8+7-Debian-1deb12u1)
-    OpenJDK 64-Bit Server VM (build 17.0.8+7-Debian-1deb12u1, mixed mode, sharing)
+# Add Jenkins GPG key (try this first)
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io.key  
+
+# If that fails, try with curl
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null 
+
+# Add Jenkins repository
+ls -la /usr/share/keyrings/jenkins-keyring.asc 
+
+#Update package list
+sudo apt-get update 
+
+# If you see GPG errors, run this to skip GPG verification temporarily:
+sudo apt-get update --allow-insecure-repositories 
+
+# Install Jenkins
+sudo apt-get install jenkins -y
+
+# Start Jenkins
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+
+# Verify Jenkins is running
+sudo systemctl status jenkins
+
+# Get Jenkins initial password
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+```
     
-    #jenkins
-    sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
-    https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-    echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
-    https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-    /etc/apt/sources.list.d/jenkins.list > /dev/null
-    sudo apt-get update
-    sudo apt-get install jenkins
-    sudo systemctl start jenkins
-    sudo systemctl enable jenkins
-    ```
-    
-    - Access Jenkins in a web browser using the public IP of your EC2 instance.
+- Access Jenkins in a web browser using the public IP of your EC2 instance.
         
-        publicIp:8080
+ **publicIp:8080**
         
 2. **Install Necessary Plugins in Jenkins:**
 
@@ -379,3 +397,6 @@ sudo systemctl restart jenkins
 
 
 ```
+
+
+
