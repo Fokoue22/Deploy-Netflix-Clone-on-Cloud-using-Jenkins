@@ -75,7 +75,7 @@ Embarking on an exciting DevSecOps journey, we're diving into the deployment of 
 
 
 It will show but without any details cause you need API key
-![Alt text](images/security-group.png)
+![Alt text](images/netflix-app-without-api.png)
 
 **Step 4: Get the API Key:**
 
