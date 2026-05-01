@@ -13,6 +13,8 @@ Embarking on an exciting DevSecOps journey, we're diving into the deployment of 
 - Add t2-large
 - Uses your defaut VPC and create a new SG that Allow SSH, HTTPS and HTTP for now 
 - Add arrount 25 GiB of storage due to alot of different blocking we'are going to use. 
+- Launche the EC2 instance
+- Before connecting using SSH create and associate an Elastic IP to the new EC2 instance
 - Connect to the instance using SSH.
 
 **Step 2: Clone the Code:**
