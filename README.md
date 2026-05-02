@@ -150,7 +150,8 @@ Install Java
 ```bash
 sudo apt update
 sudo apt-get update
-sudo apt-get install openjdk-17-jre -y
+sudo apt install fontconfig openjdk-21-jre
+
 
     
 # Add Jenkins GPG key (try this first)
@@ -169,7 +170,7 @@ sudo apt-get update
 sudo apt-get update --allow-insecure-repositories 
 
 # Install Jenkins
-sudo apt-get install jenkins -y
+sudo apt-get install jenkins 
 
 # Start Jenkins
 sudo systemctl start jenkins
