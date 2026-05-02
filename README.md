@@ -684,3 +684,11 @@ Then, start Grafana:
 sudo systemctl start grafana-server
 ```
 
+**Step 6: Check Grafana Status:**
+
+Verify the status of the Grafana service to ensure it's running correctly:
+
+```bash
+sudo systemctl status grafana-server
+```
+
