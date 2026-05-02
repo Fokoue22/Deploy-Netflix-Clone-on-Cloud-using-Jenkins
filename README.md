@@ -661,3 +661,12 @@ Add the repository for Grafana stable releases:
 echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
 ```
 
+**Step 4: Update and Install Grafana:**
+
+Update the package list and install Grafana:
+
+```bash
+sudo apt-get update
+sudo apt-get -y install grafana
+```
+
