@@ -645,4 +645,19 @@ sudo apt-get update
 sudo apt-get install -y apt-transport-https software-properties-common
 ```
 
+**Step 2: Add the GPG Key:**
+
+Add the GPG key for Grafana:
+
+```bash
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+```
+
+**Step 3: Add Grafana Repository:**
+
+Add the repository for Grafana stable releases:
+
+```bash
+echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+```
 
