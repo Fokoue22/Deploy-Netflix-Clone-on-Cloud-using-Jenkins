@@ -485,7 +485,7 @@ pipeline{
 
    `http://<your-server-ip>:9090`
 
-   **Installing Node Exporter:**
+  **Installing Node Exporter:**
 
    Create a system user for Node Exporter and download Node Exporter:
 
@@ -588,7 +588,7 @@ pipeline{
    You can access Prometheus targets at:
 
    `http://<your-prometheus-ip>:9090/targets`
-   
+
 
 2. **Configure Prometheus Plugin Integration:**
 
@@ -630,5 +630,19 @@ pipeline{
    You can access Prometheus targets at:
 
    `http://<your-prometheus-ip>:9090/targets`
+
+
+#### Grafana
+
+**Install Grafana on Ubuntu 22.04 and Set it up to Work with Prometheus**
+
+**Step 1: Install Dependencies:**
+
+First, ensure that all necessary dependencies are installed:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y apt-transport-https software-properties-common
+```
 
 
