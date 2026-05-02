@@ -670,3 +670,17 @@ sudo apt-get update
 sudo apt-get -y install grafana
 ```
 
+**Step 5: Enable and Start Grafana Service:**
+
+To automatically start Grafana after a reboot, enable the service:
+
+```bash
+sudo systemctl enable grafana-server
+```
+
+Then, start Grafana:
+
+```bash
+sudo systemctl start grafana-server
+```
+
