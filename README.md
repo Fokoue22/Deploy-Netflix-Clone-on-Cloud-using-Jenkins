@@ -704,3 +704,19 @@ You'll be prompted to log in to Grafana. The default username is "admin," and th
 
 When you log in for the first time, Grafana will prompt you to change the default password for security reasons. Follow the prompts to set a new password.
 
+**Step 9: Add Prometheus Data Source:**
+
+To visualize metrics, you need to add a data source. Follow these steps:
+
+- Click on the gear icon (⚙️) in the left sidebar to open the "Configuration" menu.
+
+- Select "Data Sources."
+
+- Click on the "Add data source" button.
+
+- Choose "Prometheus" as the data source type.
+
+- In the "HTTP" section:
+  - Set the "URL" to `http://localhost:9090` (assuming Prometheus is running on the same server).
+  - Click the "Save & Test" button to ensure the data source is working.
+
