@@ -547,6 +547,8 @@ pipeline{
 
    Enable and start Node Exporter:
 
+   cd /etc/prometheus/
+
    ```bash
    sudo systemctl enable node_exporter
    sudo systemctl start node_exporter
