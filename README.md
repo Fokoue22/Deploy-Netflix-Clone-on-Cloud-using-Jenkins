@@ -786,3 +786,14 @@ To begin monitoring your Kubernetes cluster, you'll install the Prometheus Node 
     kubectl create namespace prometheus-node-exporter
     ```
 
+3. Install the Node Exporter using Helm:
+
+    ```bash
+    helm install prometheus-node-exporter prometheus-community/prometheus-node-exporter --namespace prometheus-node-exporter
+    ```
+
+Add a Job to Scrape Metrics on nodeip:9001/metrics in prometheus.yml:
+
+Update your Prometheus configuration (prometheus.yml) to add a new job for scraping metrics from nodeip:9001/metrics. You can do this by adding the following configuration to your prometheus.yml file:
+
+
