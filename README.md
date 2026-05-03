@@ -780,3 +780,9 @@ To begin monitoring your Kubernetes cluster, you'll install the Prometheus Node 
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     ```
 
+2. Create a Kubernetes namespace for the Node Exporter:
+
+    ```bash
+    kubectl create namespace prometheus-node-exporter
+    ```
+
