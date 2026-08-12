@@ -279,6 +279,12 @@ pipeline {
 }
 ```
 
+![Alt text](images/netflix-cicd-pipeline-jenkins.png)
+
+You can check on SonarQube as your project analysis is done.
+
+![Alt text](images/netfix-SonarQube.png)
+
 Certainly, here are the instructions without step numbers:
 
 **Install Dependency-Check and Docker Tools in Jenkins**
