@@ -1,0 +1,116 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template to provision an EC2 instance on AWS with Ubuntu Server 26.04 LTS (HVM), EBS-GP3'
+
+Parameters:
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 KeyPair to enable SSH access
+    ConstraintDescription: Must be the name of an existing EC2 KeyPair
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Existing VPC ID to use for the EC2 instance
+    ConstraintDescription: Must be a valid VPC ID
+
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Existing Subnet ID within the selected VPC
+    ConstraintDescription: Must be a valid Subnet ID in the selected VPC
+
+  SecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Existing Security Group ID to associate with the EC2 instance
+    ConstraintDescription: Must be a valid Security Group ID
+
+  InstanceType:
+    Type: String
+    Default: t2.large
+    Description: EC2 instance type
+    AllowedValues:
+      - t2.large
+    ConstraintDescription: Must be t2.large
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      AMI: ami-0b6d9d3d33ba97d99
+    us-west-1:
+      AMI: ami-0c1e3ff8a8d5e40ac
+    us-west-2:
+      AMI: ami-0c6b28eb1f7c07d01
+    eu-west-1:
+      AMI: ami-0e5f1a5bb16f3b3c9
+    eu-central-1:
+      AMI: ami-0e7e134863f51218a
+    ap-southeast-1:
+      AMI: ami-034ab0fa0ea2c1d5a
+    ap-southeast-2:
+      AMI: ami-0cf9d2a96f0b0b1dd
+    ap-northeast-1:
+      AMI: ami-012f7a01f8e97e0fa
+
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [RegionMap, !Ref 'AWS::Region', AMI]
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyPairName
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds:
+        - !Ref SecurityGroupId
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeType: gp3
+            VolumeSize: 25
+            DeleteOnTermination: true
+            Encrypted: false
+      Tags:
+        - Key: Name
+          Value: Ubuntu-26.04-LTS-EC2-Instance
+        - Key: Environment
+          Value: Production
+        - Key: OS
+          Value: Ubuntu-26.04-LTS
+      Monitoring: true
+
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref EC2Instance
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: ElasticIP-EC2
+
+Outputs:
+  InstanceId:
+    Description: Instance ID of the newly created EC2 instance
+    Value: !Ref EC2Instance
+    Export:
+      Name: !Sub '${AWS::StackName}-InstanceId'
+
+  ElasticIPAddress:
+    Description: Elastic IP address associated with the EC2 instance
+    Value: !Ref ElasticIP
+    Export:
+      Name: !Sub '${AWS::StackName}-ElasticIP'
+
+  ElasticIPAllocationId:
+    Description: Allocation ID of the Elastic IP
+    Value: !GetAtt ElasticIP.AllocationId
+    Export:
+      Name: !Sub '${AWS::StackName}-AllocationId'
+
+  PublicDNS:
+    Description: Public DNS name of the EC2 instance
+    Value: !GetAtt EC2Instance.PublicDnsName
+    Export:
+      Name: !Sub '${AWS::StackName}-PublicDNS'
+
+  PrivateIP:
+    Description: Private IP address of the EC2 instance
+    Value: !GetAtt EC2Instance.PrivateIp
+    Export:
+      Name: !Sub '${AWS::StackName}-PrivateIP'
