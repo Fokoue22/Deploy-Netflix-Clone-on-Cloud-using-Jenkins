@@ -328,6 +328,15 @@ Manage Jenkins > Credentials > Add Credentials > Username with password
 
 Now, you have installed the Dependency-Check plugin, configured the tool, and added Docker-related plugins along with your DockerHub credentials in Jenkins. You can now proceed with configuring your Jenkins pipeline to include these tools and credentials in your CI/CD process.
 
+**Before you do that make sur you have stop and remove your netflix container**
+```
+# to delete
+docker stop CONTAINER ID
+docker rm CONTAINER ID
+docker ps # to verifier if everything have been remove
+```
+
+
 ```groovy
 
 pipeline{
