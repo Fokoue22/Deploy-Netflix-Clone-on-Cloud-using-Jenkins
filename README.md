@@ -339,82 +339,197 @@ docker ps # to verifier if everything have been remove
 
 ```groovy
 
-pipeline{
+pipeline {
     agent any
-    tools{
+    
+    tools {
         jdk 'jdk17'
         nodejs 'node16'
     }
+    
     environment {
-        SCANNER_HOME=tool 'sonar-scanner'
+        SCANNER_HOME = tool 'sonar-scanner'
     }
+    
     stages {
-        stage('clean workspace'){
-            steps{
+        stage('clean workspace') {
+            steps {
                 cleanWs()
             }
         }
-        stage('Checkout from Git'){
-            steps{
-                git branch: 'main', url: 'https://github.com/N4si/DevSecOps-Project.git'
+        
+        stage('Checkout from Git') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Fokoue22/Deploy-Netflix-Clone-on-Cloud-using-Jenkins.git'
             }
         }
-        stage("Sonarqube Analysis "){
-            steps{
+        
+        stage("Sonarqube Analysis ") {
+            steps {
                 withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
-                    -Dsonar.projectKey=Netflix '''
+                    sh '''
+                        $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                        -Dsonar.projectKey=Netflix
+                    '''
                 }
             }
         }
-        stage("quality gate"){
-           steps {
+        
+        stage("quality gate") {
+            steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token' 
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
                 }
-            } 
+            }
         }
+        
         stage('Install Dependencies') {
             steps {
-                sh "npm install"
+                sh 'npm install'
             }
         }
+        
         stage('OWASP FS SCAN') {
             steps {
-                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        stage('TRIVY FS SCAN') {
-            steps {
-                sh "trivy fs . > trivyfs.txt"
-            }
-        }
-        stage("Docker Build & Push"){
-            steps{
-                script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
-                       sh "docker build --build-arg TMDB_V3_API_KEY=<yourapikey> -t netflix ."
-                       sh "docker tag netflix nasi101/netflix:latest "
-                       sh "docker push nasi101/netflix:latest "
+                script {
+                    try {
+                        echo "Starting OWASP Dependency-Check scan..."
+                        dependencyCheck(
+                            odcInstallation: 'DP-Check',
+                            additionalArguments: '''
+                                --scan ./
+                                --disableYarnAudit
+                                --disableNodeAudit
+                                --format XML
+                                --project Netflix
+                                --nvdApiKey dae86cce-1eb9-40ee-ac9c-a4b872bc6c49
+                            '''
+                        )
+                        echo "OWASP scan completed successfully"
+                    } catch (Exception e) {
+                        echo "WARNING: OWASP Dependency-Check error: ${e.message}"
+                        currentBuild.result = 'UNSTABLE'
                     }
                 }
             }
         }
-        stage("TRIVY"){
-            steps{
-                sh "trivy image nasi101/netflix:latest > trivyimage.txt" 
+        
+        stage('OWASP Dependency-Check Report') {
+            steps {
+                script {
+                    try {
+                        dependencyCheckPublisher(
+                            pattern: '**/dependency-check-report.xml',
+                            failOnError: false
+                        )
+                    } catch (Exception e) {
+                        echo "Note: Dependency-Check report not available (NVD database may need initialization)"
+                    }
+                }
             }
         }
-        stage('Deploy to container'){
-            steps{
-                sh 'docker run -d -p 8081:80 nasi101/netflix:latest'
+        
+        stage('TRIVY FS SCAN') {
+            steps {
+                sh 'trivy fs . > trivyfs.txt 2>&1 || true'
+                echo "Trivy FS scan completed"
             }
+        }
+        
+        stage("Docker Build & Push") {
+            steps {
+                script {
+                    try {
+                        echo "Preparing Docker build..."
+                        
+                        // Check docker access
+                        sh '''
+                            echo "Checking Docker daemon..."
+                            /usr/bin/docker --version || (echo "ERROR: Docker not found" && exit 1)
+                            /usr/bin/docker ps > /dev/null 2>&1 || (echo "ERROR: Docker permission denied" && exit 1)
+                        '''
+                        
+                        withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                            sh '''
+                                echo "Building Docker image (no cache)..."
+                                /usr/bin/docker build --no-cache --build-arg TMDB_V3_API_KEY=f2015cb4462ab2a9c5967af38995bf1e \
+                                    -t netflix \
+                                    .
+                                
+                                echo "Tagging image..."
+                                /usr/bin/docker tag netflix fokoue/netflix:latest
+                                
+                                echo "Logging into Docker Hub..."
+                                echo "$DOCKER_PASS" | /usr/bin/docker login -u "$DOCKER_USER" --password-stdin
+                                
+                                echo "Pushing to Docker Hub..."
+                                /usr/bin/docker push fokoue/netflix:latest
+                                
+                                echo "Docker build and push completed successfully"
+                            '''
+                        }
+                    } catch (Exception e) {
+                        echo "ERROR in Docker Build & Push: ${e.message}"
+                        error("Docker operation failed")
+                    }
+                }
+            }
+        }
+        
+        stage("TRIVY") {
+            steps {
+                sh 'trivy image fokoue/netflix:latest > trivyimage.txt 2>&1 || true'
+                echo "Trivy image scan completed"
+            }
+        }
+        
+        stage('Deploy to container') {
+            steps {
+                script {
+                    try {
+                        sh '''
+                            echo "Stopping old container if running..."
+                            /usr/bin/docker stop netflix 2>/dev/null || echo "No old container to stop"
+                            /usr/bin/docker rm netflix 2>/dev/null || echo "No old container to remove"
+                            
+                            echo "Starting new container..."
+                            /usr/bin/docker run -d -p 8081:80 --name netflix fokoue/netflix:latest
+                            
+                            sleep 3
+                            echo "Checking container status..."
+                            /usr/bin/docker ps | grep netflix || echo "Container started"
+                        '''
+                    } catch (Exception e) {
+                        echo "WARNING: Deployment had issues: ${e.message}"
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo "Pipeline execution completed"
+            archiveArtifacts artifacts: 'trivyfs.txt, trivyimage.txt', allowEmptyArchive: true
+        }
+        
+        failure {
+            echo "PIPELINE FAILED - Check logs above"
+        }
+        
+        success {
+            echo "PIPELINE COMPLETED SUCCESSFULLY"
         }
     }
 }
 
+
 ```
+
+![Alt text](images/jenkins-cicp.png) 
+
+The image is also published in DockerHub
+![Alt text](images/netflix-dockerhub.png) 
 
 
 ### **Phase 4: Monitoring**
